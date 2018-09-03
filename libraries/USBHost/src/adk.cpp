@@ -45,6 +45,7 @@ ready(false) {
 	for (uint32_t i = 0; i < ADK_MAX_ENDPOINTS; i++) {
 		epInfo[i].epAddr	= 0;
 		epInfo[i].maxPktSize	= (i) ? 0 : 8;
+		epInfo[i].bmAttribs	= 0;
 		epInfo[i].bmSndToggle   = 0;
 		epInfo[i].bmRcvToggle   = 0;
 		epInfo[i].bmNakPower  	= (i) ? USB_NAK_NOWAIT : USB_NAK_MAX_POWER;
@@ -365,6 +366,7 @@ void ADK::EndpointXtract(uint32_t conf, uint32_t /* iface */, uint32_t /* alt */
                 // Fill in the endpoint info structure
                 epInfo[index].epAddr = (pep->bEndpointAddress & 0x0F);
                 epInfo[index].maxPktSize = (uint8_t)pep->wMaxPacketSize;
+                epInfo[index].bmAttribs = pep->bmAttributes;
                 epInfo[index].bmSndToggle = 0;
                 epInfo[index].bmRcvToggle = 0;
 

@@ -64,8 +64,8 @@ void setup()
   while (!Serial); // Wait for serial port to connect - used on Leonardo, Teensy and other boards with built-in USB CDC serial connection
   SERIAL_PORT_MONITOR.println("Start USB Desc");
 
-  if (usb.Init() == -1)
-      SERIAL_PORT_MONITOR.println("OSC did not start.");
+  if (usb.Init())
+      SERIAL_PORT_MONITOR.println("USB Host did not start.");
 
   delay( 20 );
 
@@ -214,18 +214,17 @@ byte getconfdescr( byte addr, byte conf )
 {
   uint8_t buf[ BUFSIZE ];
   uint8_t* buf_ptr = buf;
-  byte rcode;
   byte descr_length;
   byte descr_type;
   uint16_t total_length;
-  rcode = usb.getConfDescr( addr, 0, 4, conf, buf );  //get total length
+  usb.getConfDescr( addr, 0, 4, conf, buf );  //get total length
   LOBYTE( total_length ) = buf[ 2 ];
   HIBYTE( total_length ) = buf[ 3 ];
   if( total_length > sizeof(buf)) {    //check if total length is larger than buffer
     printProgStr(Conf_Trunc_str);
     total_length = sizeof(buf);
   }
-  rcode = usb.getConfDescr( addr, 0, total_length, conf, buf ); //get the whole descriptor
+  usb.getConfDescr( addr, 0, total_length, conf, buf ); //get the whole descriptor
   while( buf_ptr < buf + total_length ) {  //parsing descriptors
     descr_length = *( buf_ptr );
     descr_type = *( buf_ptr + 1 );

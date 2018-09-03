@@ -244,6 +244,7 @@ void HIDBoot<BOOT_PROTOCOL>::Initialize() {
         for(int i = 0; i < totalEndpoints(BOOT_PROTOCOL); i++) {
                 epInfo[i].epAddr = 0;
 		epInfo[i].maxPktSize	= (i) ? 0 : 8;
+		epInfo[i].bmAttribs     = 0;
 		epInfo[i].bmSndToggle   = 0;
 		epInfo[i].bmRcvToggle   = 0;
 		epInfo[i].bmNakPower	= (i) ? USB_NAK_NOWAIT : USB_NAK_MAX_POWER;
@@ -530,12 +531,13 @@ void HIDBoot<BOOT_PROTOCOL>::EndpointXtract(uint32_t conf, uint32_t iface, uint3
 	bConfNum = conf;
 	bIfaceNum = iface;
 
-	if((pep->bmAttributes & 0x03) == 3 && (pep->bEndpointAddress & 0x80) == 0x80) {
+	if((pep->bmAttributes & bmUSB_TRANSFER_TYPE) == USB_TRANSFER_TYPE_INTERRUPT && (pep->bEndpointAddress & 0x80) == 0x80) {
                 if(pep->bInterval > bInterval) bInterval = pep->bInterval;
 
 		// Fill in the endpoint info structure
 		epInfo[bNumEP].epAddr		= (pep->bEndpointAddress & 0x0F);
 		epInfo[bNumEP].maxPktSize	= (uint8_t)pep->wMaxPacketSize;
+		epInfo[bNumEP].bmAttribs	= pep->bmAttributes;
 		epInfo[bNumEP].bmSndToggle = 0;
 		epInfo[bNumEP].bmRcvToggle = 0;
                 epInfo[bNumEP].bmNakPower = USB_NAK_NOWAIT;
@@ -573,7 +575,6 @@ uint32_t HIDBoot<BOOT_PROTOCOL>::Poll() {
                         USBTRACE3("(hidboot.h) epInfo[epInterruptInIndex + i].epAddr=", epInfo[epInterruptInIndex + i].epAddr, 0x81);
                         USBTRACE3("(hidboot.h) epInfo[epInterruptInIndex + i].maxPktSize=", epInfo[epInterruptInIndex + i].maxPktSize, 0x81);
                         uint16_t read = (uint16_t)epInfo[epInterruptInIndex + i].maxPktSize;
-                        UHD_Pipe_Alloc(bAddress, epInfo[epInterruptInIndex + i].epAddr, USB_HOST_PTYPE_BULK, USB_EP_DIR_IN, epInfo[epInterruptInIndex + i].maxPktSize, 0, USB_HOST_NB_BK_1);
                         rcode = pUsb->inTransfer(bAddress, epInfo[epInterruptInIndex + i].epAddr, (uint8_t*)&read, buf);
                         // SOME buggy dongles report extra keys (like sleep) using a 2 byte packet on the wrong endpoint.
                         // Since keyboard and mice must report at least 3 bytes, we ignore the extra data.

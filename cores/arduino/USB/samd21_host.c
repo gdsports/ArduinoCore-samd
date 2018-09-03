@@ -62,7 +62,6 @@ void UHD_Init(void)
 	uint32_t pad_transn;
 	uint32_t pad_transp;
 	uint32_t pad_trim;
-	uint32_t i;
 
 	USB_SetHandler(&UHD_Handler);
 
@@ -334,10 +333,9 @@ uint32_t UHD_Pipe0_Alloc(uint32_t ul_add , uint32_t ul_ep_size)
 uint32_t UHD_Pipe_Alloc(uint32_t ul_dev_addr, uint32_t ul_dev_ep, uint32_t ul_type, uint32_t ul_dir, uint32_t ul_maxsize, uint32_t ul_interval, uint32_t ul_nb_bank)
 {
 	/* set pipe config */
+	USB->HOST.HostPipe[ul_dev_ep].PCFG.reg = 0;
 	USB->HOST.HostPipe[ul_dev_ep].PCFG.bit.BK    = ul_nb_bank;
-	// PTYPE:
-	USB->HOST.HostPipe[ul_dev_ep].PCFG.reg &= ~USB_HOST_PCFG_MASK;  // USB->HOST.HostPipe[0].PCFG.bit.PTYPE = 1; //USB_HOST_PCFG_PTYPE_CTRL;
-	USB->HOST.HostPipe[ul_dev_ep].PCFG.reg |= ul_type;
+	USB->HOST.HostPipe[ul_dev_ep].PCFG.bit.PTYPE = ul_type+1;    // bmAttributes+1
 	USB->HOST.HostPipe[ul_dev_ep].BINTERVAL.reg  = ul_interval;
 
    if (ul_dir & USB_EP_DIR_IN)

@@ -33,6 +33,7 @@ e-mail   :  support@circuitsathome.com
 struct EpInfo {
 	uint32_t epAddr; // Endpoint address
 	uint32_t maxPktSize; // Maximum packet size
+	uint8_t	bmAttribs;	// interrupt, bulk, isoc, etc.
 	union {
 		uint8_t		epAttribs;
 

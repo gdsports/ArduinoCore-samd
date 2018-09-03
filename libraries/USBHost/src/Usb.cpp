@@ -110,8 +110,13 @@ uint32_t USBHost::SetPipeAddress(uint32_t addr, uint32_t ep, EpInfo **ppep, uint
           USBTRACE("\r\n");
          */
 
-	// CTRL_PIPE.PDADDR: usb_pipe_table[pipe_num].HostDescBank[0].CTRL_PIPE.bit.PDADDR = addr
-	uhd_configure_address((*ppep)->epAddr, addr); 	// Set peripheral address
+    if (ep) {
+		UHD_Pipe_Alloc(addr, ep, (*ppep)->bmAttribs, (*ppep)->epAddr & 0x80, (*ppep)->maxPktSize, 0, USB_HOST_NB_BK_1);
+	}
+	else {
+		// CTRL_PIPE.PDADDR: usb_pipe_table[pipe_num].HostDescBank[0].CTRL_PIPE.bit.PDADDR = addr
+		uhd_configure_address((*ppep)->epAddr, addr); 	// Set peripheral address
+	}
 
 	return 0;
 }
