@@ -99,7 +99,7 @@ public:
                 const char* serial);
 
 	// Methods for receiving and sending data
-	uint32_t RcvData(uint8_t *nbytesptr, uint8_t *dataptr);
+	uint32_t RcvData(uint16_t *nbytesptr, uint8_t *dataptr);
 	uint32_t SndData(uint32_t nbytes, uint8_t *dataptr);
 
 

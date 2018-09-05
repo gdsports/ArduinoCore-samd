@@ -365,7 +365,7 @@ void ADK::EndpointXtract(uint32_t conf, uint32_t /* iface */, uint32_t /* alt */
                 uint32_t index = ((pep->bEndpointAddress & 0x80) == 0x80) ? epDataInIndex : epDataOutIndex;
                 // Fill in the endpoint info structure
                 epInfo[index].epAddr = (pep->bEndpointAddress & 0x0F);
-                epInfo[index].maxPktSize = (uint8_t)pep->wMaxPacketSize;
+                epInfo[index].maxPktSize = pep->wMaxPacketSize;
                 epInfo[index].bmAttribs = pep->bmAttributes;
                 epInfo[index].bmSndToggle = 0;
                 epInfo[index].bmRcvToggle = 0;
@@ -387,7 +387,7 @@ uint32_t ADK::Release() {
 	return 0;
 }
 
-uint32_t ADK::RcvData(uint8_t *bytes_rcvd, uint8_t *dataptr) {
+uint32_t ADK::RcvData(uint16_t *bytes_rcvd, uint8_t *dataptr) {
         USBTRACE2("\r\nAddr: ", bAddress );
         USBTRACE2("\r\nEP: ",epInfo[epDataInIndex].epAddr);
         return pUsb->inTransfer(bAddress, epInfo[epDataInIndex].epAddr, bytes_rcvd, dataptr);

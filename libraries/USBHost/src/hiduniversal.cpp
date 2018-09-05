@@ -325,7 +325,7 @@ void HIDUniversal::EndpointXtract(uint32_t conf, uint32_t iface, uint32_t alt, u
         if(index) {
                 // Fill in the endpoint info structure
                 epInfo[bNumEP].epAddr = (pep->bEndpointAddress & 0x0F);
-                epInfo[bNumEP].maxPktSize = (uint8_t)pep->wMaxPacketSize;
+                epInfo[bNumEP].maxPktSize = pep->wMaxPacketSize;
                 epInfo[bNumEP].bmAttribs = pep->bmAttributes;
                 epInfo[bNumEP].bmSndToggle = 0;
                 epInfo[bNumEP].bmRcvToggle = 0;
@@ -382,11 +382,11 @@ uint32_t HIDUniversal::Poll() {
 
                 for(uint8_t i = 0; i < bNumIface; i++) {
                         uint8_t index = hidInterfaces[i].epIndex[epInterruptInIndex];
-                        uint16_t read = (uint8_t)epInfo[index].maxPktSize;
+                        uint16_t read = epInfo[index].maxPktSize;
 
                         ZeroMemory(constBuffLen, buf);
 
-                        uint8_t rcode = pUsb->inTransfer(bAddress, epInfo[index].epAddr, (uint8_t*)&read, buf);
+                        uint8_t rcode = pUsb->inTransfer(bAddress, epInfo[index].epAddr, &read, buf);
 
                         if(rcode) {
                                 if(rcode != USB_ERRORFLOW/*hrNAK*/)

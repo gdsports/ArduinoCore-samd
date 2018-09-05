@@ -179,9 +179,9 @@ uint32_t USBHost::ctrlReq(uint32_t addr, uint32_t ep, uint8_t bmReqType, uint8_t
 			pep->bmRcvToggle = 1; //bmRCVTOG1;
 
 			// Bytes read into buffer
-			uint32_t read = nbytes;
+			uint16_t read = total;
 
-			rcode = InTransfer(pep, nak_limit, (uint8_t*)&read, dataptr);
+			rcode = InTransfer(pep, nak_limit, &read, dataptr);
 
 			if((rcode&USB_ERROR_DATATOGGLE) == USB_ERROR_DATATOGGLE) {
 						// yes, we flip it wrong here so that next time it is actually correct!
@@ -218,7 +218,7 @@ uint32_t USBHost::ctrlReq(uint32_t addr, uint32_t ep, uint8_t bmReqType, uint8_t
 
 /* rcode 0 if no errors. rcode 01-0f is relayed from dispatchPkt(). Rcode f0 means RCVDAVIRQ error,
             fe USB xfer timeout */
-uint32_t USBHost::inTransfer(uint32_t addr, uint32_t ep, uint8_t *nbytesptr, uint8_t* data) {
+uint32_t USBHost::inTransfer(uint32_t addr, uint32_t ep, uint16_t *nbytesptr, uint8_t* data) {
 	EpInfo *pep = NULL;
 	uint32_t nak_limit = 0;
 
@@ -233,7 +233,7 @@ uint32_t USBHost::inTransfer(uint32_t addr, uint32_t ep, uint8_t *nbytesptr, uin
 	return InTransfer(pep, nak_limit, nbytesptr, data);
 }
 
-uint32_t USBHost::InTransfer(EpInfo *pep, uint32_t nak_limit, uint8_t *nbytesptr, uint8_t* data) {
+uint32_t USBHost::InTransfer(EpInfo *pep, uint32_t nak_limit, uint16_t *nbytesptr, uint8_t* data) {
 	uint32_t rcode = 0;
 	uint32_t pktsize = 0;
 
@@ -834,8 +834,7 @@ uint32_t USBHost::getConfDescr(uint32_t addr, uint32_t ep, uint32_t nbytes, uint
 /* Requests Configuration Descriptor. Sends two Get Conf Descr requests. The first one gets the total length of all descriptors, then the second one requests this
  total length. The length of the first request can be shorter ( 4 bytes ), however, there are devices which won't work unless this length is set to 9 */
 uint32_t USBHost::getConfDescr(uint32_t addr, uint32_t ep, uint32_t conf, USBReadParser *p) {
-	const uint32_t bufSize = 64;
-	uint8_t buf[bufSize];
+	uint8_t buf[128];
 	USB_CONFIGURATION_DESCRIPTOR *ucd = reinterpret_cast<USB_CONFIGURATION_DESCRIPTOR *>(buf);
 
 	uint32_t ret = getConfDescr(addr, ep, 9, conf, buf);
@@ -846,8 +845,7 @@ uint32_t USBHost::getConfDescr(uint32_t addr, uint32_t ep, uint32_t conf, USBRea
         uint32_t total = ucd->wTotalLength;
 
         //USBTRACE2("\r\ntotal conf.size:", total);
-
-        return (ctrlReq(addr, ep, bmREQ_GET_DESCR, USB_REQUEST_GET_DESCRIPTOR, conf, USB_DESCRIPTOR_CONFIGURATION, 0x0000, total, bufSize, buf, p));
+        return (ctrlReq(addr, ep, bmREQ_GET_DESCR, USB_REQUEST_GET_DESCRIPTOR, conf, USB_DESCRIPTOR_CONFIGURATION, 0x0000, total, sizeof(buf), buf, p));
 }
 
 //get string descriptor

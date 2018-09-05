@@ -48,7 +48,7 @@ void setup(void)
 void loop(void)
 {
 	uint8_t buf[RCVSIZE];
-	uint32_t nbread = 0;
+	uint16_t nbread = RCVSIZE;
 	char helloworld[] = "Hello World!\r\n";
 
 	usb.Task();
@@ -62,7 +62,7 @@ void loop(void)
 	delay(1000);
 
 	/* Read data from ADK and print to UART */
-	adk.RcvData((uint8_t *)&nbread, buf);
+	adk.RcvData(&nbread, buf);
 	if (nbread > 0)
 	{
 		SERIAL_PORT_MONITOR.print("RCV: ");

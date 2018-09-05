@@ -322,7 +322,7 @@ uint32_t HIDBoot<BOOT_PROTOCOL>::Init(uint32_t parent, uint32_t port, uint32_t l
 		return USB_ERROR_OUT_OF_ADDRESS_SPACE_IN_POOL;
 
 	// Extract Max Packet Size from the device descriptor
-	epInfo[0].maxPktSize = (uint8_t)((USB_DEVICE_DESCRIPTOR*)buf)->bMaxPacketSize0;
+	epInfo[0].maxPktSize = ((USB_DEVICE_DESCRIPTOR*)buf)->bMaxPacketSize0;
 
 	// Assign new address to the device  SET_ADDRESS
 
@@ -536,7 +536,7 @@ void HIDBoot<BOOT_PROTOCOL>::EndpointXtract(uint32_t conf, uint32_t iface, uint3
 
 		// Fill in the endpoint info structure
 		epInfo[bNumEP].epAddr		= (pep->bEndpointAddress & 0x0F);
-		epInfo[bNumEP].maxPktSize	= (uint8_t)pep->wMaxPacketSize;
+		epInfo[bNumEP].maxPktSize	= pep->wMaxPacketSize;
 		epInfo[bNumEP].bmAttribs	= pep->bmAttributes;
 		epInfo[bNumEP].bmSndToggle = 0;
 		epInfo[bNumEP].bmRcvToggle = 0;
@@ -575,12 +575,12 @@ uint32_t HIDBoot<BOOT_PROTOCOL>::Poll() {
                         USBTRACE3("(hidboot.h) epInfo[epInterruptInIndex + i].epAddr=", epInfo[epInterruptInIndex + i].epAddr, 0x81);
                         USBTRACE3("(hidboot.h) epInfo[epInterruptInIndex + i].maxPktSize=", epInfo[epInterruptInIndex + i].maxPktSize, 0x81);
                         uint16_t read = (uint16_t)epInfo[epInterruptInIndex + i].maxPktSize;
-                        rcode = pUsb->inTransfer(bAddress, epInfo[epInterruptInIndex + i].epAddr, (uint8_t*)&read, buf);
+                        rcode = pUsb->inTransfer(bAddress, epInfo[epInterruptInIndex + i].epAddr, &read, buf);
                         // SOME buggy dongles report extra keys (like sleep) using a 2 byte packet on the wrong endpoint.
                         // Since keyboard and mice must report at least 3 bytes, we ignore the extra data.
                         if(!rcode && read > 2) {
                                 if(pRptParser[i])
-                                        pRptParser[i]->Parse((HID*)this, 0, (uint8_t)read, buf);
+                                        pRptParser[i]->Parse((HID*)this, 0, read, buf);
 #ifdef DEBUG_USB_HOST
                                 // We really don't care about errors and anomalies unless we are debugging.
                         } else {
