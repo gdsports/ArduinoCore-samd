@@ -95,7 +95,7 @@ HIDReportParser* HIDUniversal::GetReportParser(uint32_t id) {
         return NULL;
 }
 
-uint8_t HIDUniversal::Init(uint8_t parent, uint8_t port, bool lowspeed) {
+uint32_t HIDUniversal::Init(uint32_t parent, uint32_t port, uint32_t lowspeed) {
         const uint8_t constBufSize = sizeof (USB_DEVICE_DESCRIPTOR);
 
         uint8_t buf[constBufSize];
@@ -360,8 +360,7 @@ bool HIDUniversal::BuffersIdentical(uint8_t len, uint8_t *buf1, uint8_t *buf2) {
 }
 
 void HIDUniversal::ZeroMemory(uint8_t len, uint8_t *buf) {
-        for(uint8_t i = 0; i < len; i++)
-                buf[i] = 0;
+        memset(buf, 0, len);
 }
 
 void HIDUniversal::SaveBuffer(uint8_t len, uint8_t *src, uint8_t *dest) {

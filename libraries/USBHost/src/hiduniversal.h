@@ -86,7 +86,7 @@ public:
         virtual uint32_t SetReportParser(uint32_t id, HIDReportParser *prs);
 
         // USBDeviceConfig implementation
-        virtual uint8_t Init(uint8_t parent, uint8_t port, bool lowspeed);
+        virtual uint32_t Init(uint32_t parent, uint32_t port, uint32_t lowspeed);
         virtual uint32_t Release();
         virtual uint32_t Poll();
 

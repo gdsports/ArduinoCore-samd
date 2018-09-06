@@ -631,9 +631,8 @@ uint32_t USBHost::DefaultAddressing(uint32_t parent, uint32_t port, uint32_t low
 uint32_t USBHost::AttemptConfig(uint32_t driver, uint32_t parent, uint32_t port, uint32_t lowspeed) {
         //printf("AttemptConfig: parent = %i, port = %i\r\n", parent, port);
         uint8_t retries = 0;
-
 again:
-        uint8_t rcode = devConfig[driver]->ConfigureDevice(parent, port, lowspeed);
+        uint32_t rcode = devConfig[driver]->ConfigureDevice(parent, port, lowspeed);
         if(rcode == USB_ERROR_CONFIG_REQUIRES_ADDITIONAL_RESET) {
                 if(parent == 0) {
                         // Send a bus reset on the root interface.
