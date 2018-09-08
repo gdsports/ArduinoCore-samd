@@ -218,7 +218,7 @@ uint32_t USBHost::ctrlReq(uint32_t addr, uint32_t ep, uint8_t bmReqType, uint8_t
 
 /* rcode 0 if no errors. rcode 01-0f is relayed from dispatchPkt(). Rcode f0 means RCVDAVIRQ error,
             fe USB xfer timeout */
-uint32_t USBHost::inTransfer(uint32_t addr, uint32_t ep, uint16_t *nbytesptr, uint8_t* data) {
+uint32_t USBHost::inTransfer(uint32_t addr, uint32_t ep, uint16_t *nbytesptr, uint8_t* data, uint8_t bInterval /*= 0*/) {
 	EpInfo *pep = NULL;
 	uint32_t nak_limit = 0;
 
@@ -230,10 +230,10 @@ uint32_t USBHost::inTransfer(uint32_t addr, uint32_t ep, uint16_t *nbytesptr, ui
                 USBTRACE3("(USB::InTransfer) ep requested ", ep, 0x81);
                 return rcode;
         }
-	return InTransfer(pep, nak_limit, nbytesptr, data);
+	return InTransfer(pep, nak_limit, nbytesptr, data, bInterval);
 }
 
-uint32_t USBHost::InTransfer(EpInfo *pep, uint32_t nak_limit, uint16_t *nbytesptr, uint8_t* data) {
+uint32_t USBHost::InTransfer(EpInfo *pep, uint32_t nak_limit, uint16_t *nbytesptr, uint8_t* data, uint8_t bInterval /*= 0*/) {
 	uint32_t rcode = 0;
 	uint32_t pktsize = 0;
 
@@ -308,7 +308,8 @@ uint32_t USBHost::InTransfer(EpInfo *pep, uint32_t nak_limit, uint16_t *nbytespt
             //printf("\r\n");
             rcode = 0;
             break;
-		} // if
+        } else if(bInterval > 0)
+            delay(bInterval); // Delay according to polling interval
 	} //while( 1 )
 	uhd_freeze_pipe(pep->epAddr);
 	return ( rcode);

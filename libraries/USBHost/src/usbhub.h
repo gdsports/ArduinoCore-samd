@@ -131,21 +131,21 @@ e-mail   :  support@circuitsathome.com
 #define bmHUB_PORT_EVENT_LS_PORT_ENABLED	(((0UL | bmHUB_PORT_STATUS_C_PORT_CONNECTION | bmHUB_PORT_STATUS_C_PORT_ENABLE)		<< 16) | bmHUB_PORT_STATUS_PORT_POWER | bmHUB_PORT_STATUS_PORT_ENABLE | bmHUB_PORT_STATUS_PORT_CONNECTION | bmHUB_PORT_STATUS_PORT_LOW_SPEED)
 
 struct HubDescriptor {
-        uint32_t bDescLength; // descriptor length
-        uint32_t bDescriptorType; // descriptor type
-        uint32_t bNbrPorts; // number of ports a hub equiped with
+        uint8_t bDescLength; // descriptor length
+        uint8_t bDescriptorType; // descriptor type
+        uint8_t bNbrPorts; // number of ports a hub equiped with
 
         struct {
-                uint32_t LogPwrSwitchMode : 2;
-                uint32_t CompoundDevice : 1;
-                uint32_t OverCurrentProtectMode : 2;
-                uint32_t TTThinkTime : 2;
-                uint32_t PortIndicatorsSupported : 1;
-                uint32_t Reserved : 24;
+                uint16_t LogPwrSwitchMode : 2;
+                uint16_t CompoundDevice : 1;
+                uint16_t OverCurrentProtectMode : 2;
+                uint16_t TTThinkTime : 2;
+                uint16_t PortIndicatorsSupported : 1;
+                uint16_t Reserved : 8;
         } __attribute__((packed));
 
-        uint32_t bPwrOn2PwrGood;
-        uint32_t bHubContrCurrent;
+        uint8_t bPwrOn2PwrGood;
+        uint8_t bHubContrCurrent;
 } __attribute__((packed));
 
 struct HubEvent {
@@ -153,8 +153,8 @@ struct HubEvent {
         union {
 
                 struct {
-                        uint32_t bmStatus; // port status bits
-                        uint32_t bmChange; // port status change bits
+                        uint16_t bmStatus; // port status bits
+                        uint16_t bmChange; // port status change bits
                 } __attribute__((packed));
                 uint32_t bmEvent;
                 uint8_t evtBuff[4];
